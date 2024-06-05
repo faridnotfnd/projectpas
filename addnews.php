@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("ssss", $title, $target_file, $date, $content);
 
         if ($stmt->execute()) {
-            echo "<script>alert('Berita berhasil ditambahkan'); window.location.href = 'admin.php';</script>";
+            echo "<script>window.location.href = 'admin.php';</script>";
         } else {
             echo "<script>alert('Terjadi kesalahan'); window.location.href = 'addnews.php';</script>";
         }

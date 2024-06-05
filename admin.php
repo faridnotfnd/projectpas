@@ -6,23 +6,8 @@ if (!isset($_SESSION['username'])) {
 }
 include 'koneksi.php';
 
-$result = $conn->query("SELECT image, title, date, content, id FROM admin");
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // ...
-
-    // Insert data ke database
-    $stmt = $conn->prepare("INSERT INTO admin (title, image, date, content) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $title, $image, $date, $content);
-
-    if ($stmt->execute()) {
-        // Redirect ke halaman index.php
-        header("Location: index.php");
-        exit();
-    } else {
-        // Tampilkan pesan error jika insert gagal
-        echo "Gagal menambahkan card ke database.";
-    }
-}
+// Query to get data sorted by date in descending order
+$result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER BY date DESC");
 ?>
 
 <!DOCTYPE html>
@@ -48,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h1>Admin Panel</h1>
                 <input type="text" placeholder="Search the cards...">
                 <a href="addnews.php" class="btn btn-primary">Add</a>
-                <a href="index.php" class="btn btn-secondary">Logout</a>
+                <a href="#" class="btn btn-secondary" onclick="confirmLogout(event)">Logout</a>
             </header>
             <section class="news-cards">
                 <table class="table table-striped">
@@ -57,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <th>Judul Acara</th>
                             <th>Gambar</th>
                             <th>Tanggal</th>
-                            <th>Isi</th>
+                            <th>Deskripsi</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -71,9 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>
                                     <a href="editnews.php?id=<?php echo $row['id']; ?>"
                                         class="btn btn-warning btn-sm">Edit</a>
-                                    <button onclick="confirmDelete(<?php echo $row['id']; ?>)"
-                                        class="btn btn-danger btn-sm">Delete</button>
-
+                                    <a href="deletenews.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this item?')">Delete</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -82,15 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </section>
         </main>
     </div>
+
     <script>
-        function confirmDelete(id) {
-            if (confirm("Are you sure you want to delete this news?")) {
-                // Redirect to deletenews.php with the news id
-                window.location.href = "deletenews.php?id=" + id;
+        function confirmLogout(event) {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'logout.php';
+            } else {
+                event.preventDefault();
             }
         }
     </script>
-
 </body>
 
 </html>
