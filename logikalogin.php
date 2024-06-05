@@ -16,7 +16,7 @@ if ($result->num_rows == 1) {
     header("location: admin.php");
     exit();
 } else {
-    echo "<script>alert('Password anda salah'); window.location.href = 'index.php';</script>";
+    echo "<script>alert('Password anda salah'); window.location.href = 'login.php';</script>";
     exit();
 }
 ?>
