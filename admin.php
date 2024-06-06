@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("location: login.php");
+    header("location: index.php");
     exit();
 }
 include 'koneksi.php';
@@ -63,16 +63,19 @@ $result = $conn->query("SELECT image, title, date, content, category, id FROM ad
             <header class="main-header">
                 <h1>Admin Panel</h1>
                 <div class="search-bar">
-                    <input type="text">
+                    <span class="search-icon">
+                        <input type="text" placeholder="Search...">
+                    </span>
                 </div>
                 <a href="addnews.php" class="btn btn-primary">Add</a>
                 <a href="#" class="btn btn-secondary" onclick="confirmLogout(event)">Logout</a>
             </header>
+
             <section class="news-cards">
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Judul Acara</th>
+                            <th>Judul</th>
                             <th>Gambar</th>
                             <th>Tanggal</th>
                             <th>Kategori</th>

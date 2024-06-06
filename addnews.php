@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .back-to-blog {
             color: #343434;
             font-size: 18px;
+            font-weight: 600;
         }
 
         a:hover {
@@ -88,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         .icon {
             margin: 20px 0 23px 20px;
-            width: 23px;
-            height: 23px;
+            width: 17px;
+            height: 17px;
         }
 
         .icon,
