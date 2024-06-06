@@ -19,9 +19,40 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
     <title>Admin - Majalah Dinding SMKN 1 Banjar</title>
     <link rel="stylesheet" href="./style/styles.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="favicon.ico">
     <style>
         .container {
             margin-right: 200px;
+        }
+
+        .description {
+            max-height: 100px;
+            /* Set the max height you want */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            /* Number of lines to show */
+            -webkit-box-orient: vertical;
+        }
+
+        .action-column {
+            width: 150px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #aaa;
+            border-radius: 10px;
+            width: 250px;
+            height: 41px;
         }
     </style>
 </head>
@@ -31,7 +62,9 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
         <main class="main-content">
             <header class="main-header">
                 <h1>Admin Panel</h1>
-                <input type="text" placeholder="Search the cards...">
+                <div class="search-bar">
+                    <input type="text">
+                </div>
                 <a href="addnews.php" class="btn btn-primary">Add</a>
                 <a href="#" class="btn btn-secondary" onclick="confirmLogout(event)">Logout</a>
             </header>
@@ -43,7 +76,7 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
                             <th>Gambar</th>
                             <th>Tanggal</th>
                             <th>Deskripsi</th>
-                            <th>Action</th>
+                            <th class="action-column">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,7 +85,9 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
                                 <td><?php echo $row['title']; ?></td>
                                 <td><img src="<?php echo $row['image']; ?>" alt="News Image" style="width: 100px;"></td>
                                 <td><?php echo $row['date']; ?></td>
-                                <td><?php echo $row['content']; ?></td>
+                                <td>
+                                    <div class="description"><?php echo $row['content']; ?></div>
+                                </td>
                                 <td>
                                     <a href="editnews.php?id=<?php echo $row['id']; ?>"
                                         class="btn btn-warning btn-sm">Edit</a>

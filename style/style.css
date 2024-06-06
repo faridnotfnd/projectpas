@@ -93,15 +93,28 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid #aaa;
+    border-radius: 18px;
+    padding: 10px;
+    width: 320px;
+    height: 44px;
+    background-color: #fff;
 }
 
 .search-bar input {
-    padding: 10px;
+    border: none;
+    outline: none;
+    padding-left: 10px;
     font-size: 16px;
-    border: 1px solid #aaa;
-    border-radius: 18px;
-    width: 320px;
-    height: 43px;
+    width: 100%;
+    height: 100%;
+}
+
+.search-bar svg {
+    margin-right: 5px;
+    width: 20px;
+    height: 20px;
+    fill: #aaa;
 }
 
 .news-cards {
@@ -112,18 +125,19 @@ body {
 
 .card {
     background-color: #f6f6f6;
-    border-radius: 17px;
+    border-radius: 15px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     width: 100%;
     max-width: 450px;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease;
 }
 
 .card:hover {
-    background-color: #DCDCDC;
+    background-color: #c8c8c8;
     cursor: pointer;
+    transition: .9s ease;
 }
 
 .card img {
@@ -143,12 +157,13 @@ body {
     margin-top: 0;
     margin-bottom: 0px;
     font-size: 20px;
-    color: #2c3e50;
+    color: #28282B;
 }
 
 .card .date {
     font-size: 14px;
-    color: #757575;
+    color: #353935;
+    font-weight: 300;
     margin-bottom: 10px;
 }
 
@@ -156,8 +171,24 @@ body {
     margin: 5px 0;
     font-size: 16px;
     color: #333;
+    font-weight: 100;
 }
 
 .card-content p:first-of-type {
     margin-top: 10px;
+}
+
+.continue-reading {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #36454F;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.icon {
+    width: 10px;
+    height: 10px;
 }
