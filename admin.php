@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])) {
 include 'koneksi.php';
 
 // Query to get data sorted by date in descending order
-$result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER BY date DESC");
+$result = $conn->query("SELECT image, title, date, content, category, id FROM admin ORDER BY date DESC");
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +16,7 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Majalah Dinding SMKN 1 Banjar</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="./style/styles.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="icon" href="favicon.ico">
@@ -75,6 +75,7 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
                             <th>Judul Acara</th>
                             <th>Gambar</th>
                             <th>Tanggal</th>
+                            <th>Kategori</th>
                             <th>Deskripsi</th>
                             <th class="action-column">Action</th>
                         </tr>
@@ -85,6 +86,7 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
                                 <td><?php echo $row['title']; ?></td>
                                 <td><img src="<?php echo $row['image']; ?>" alt="News Image" style="width: 100px;"></td>
                                 <td><?php echo $row['date']; ?></td>
+                                <td><?php echo $row['category']; ?></td> <!-- Tambahkan kolom kategori -->
                                 <td>
                                     <div class="description"><?php echo $row['content']; ?></div>
                                 </td>
@@ -95,6 +97,7 @@ $result = $conn->query("SELECT image, title, date, content, id FROM admin ORDER 
                                         onclick="return confirm('Are you sure you want to delete this item?')">Delete</a>
                                 </td>
                             </tr>
+
                         <?php endwhile; ?>
                     </tbody>
                 </table>

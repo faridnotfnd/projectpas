@@ -18,7 +18,11 @@ $result = $conn->query("SELECT id, image, title, date, content FROM admin"); // 
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" href="favicon.ico">
     <style>
-
+        .card:hover {
+            background-color: #D3D3D3;
+            cursor: pointer;
+            transition: .9s ease;
+        }
     </style>
 </head>
 
@@ -39,7 +43,7 @@ $result = $conn->query("SELECT id, image, title, date, content FROM admin"); // 
                 <h1>Majalah Dinding SMKN 1 BANJAR</h1>
                 <p>Menampilkan berita terbaru yang ada di sekolah</p>
                 <div class="search-bar">
-                    <input type="text" placeholder="Cari...">
+                    <input type="text" placeholder="Search">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                         <path
@@ -54,8 +58,11 @@ $result = $conn->query("SELECT id, image, title, date, content FROM admin"); // 
                         <a href="article.php?id=<?php echo $row['id']; ?>">
                             <img src="<?php echo $row['image']; ?>" alt="Gambar Berita">
                             <div class="card-content">
+                                <div class="card-header">
+                                    <span class="category">Category</span> <span class="dot">•</span> <span
+                                        class="date"><?php echo $row['date']; ?></span>
+                                </div>
                                 <h2><?php echo $row['title']; ?></h2>
-                                <p class="date"><?php echo $row['date']; ?></p>
                                 <p><?php echo substr($row['content'], 0, 200); ?>...</p>
                                 <a href="#" class="continue-reading">
                                     Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"

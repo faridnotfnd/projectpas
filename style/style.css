@@ -121,6 +121,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    margin-top: 20px;
 }
 
 .card {
@@ -135,7 +136,7 @@ body {
 }
 
 .card:hover {
-    background-color: #c8c8c8;
+    background-color: #ffaa00;
     cursor: pointer;
     transition: .9s ease;
 }
@@ -153,18 +154,35 @@ body {
     text-align: left;
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.card-header .category,
+.dot {
+    font-weight: bold;
+    font-size: 16px;
+    color: #343434;
+    margin-bottom: -18px;
+}
+
 .card h2 {
     margin-top: 0;
-    margin-bottom: 0px;
+    margin-bottom: 3px;
     font-size: 20px;
     color: #28282B;
 }
 
 .card .date {
-    font-size: 14px;
-    color: #353935;
-    font-weight: 300;
-    margin-bottom: 10px;
+    font-size: 15px;
+    color: #343434;
+    margin-right: 240px;
+    font-weight: 600;
+    margin-bottom: 3px;
 }
 
 .card p {

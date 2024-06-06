@@ -9,6 +9,7 @@ include 'koneksi.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
     $date = $_POST['date'];
+    $category = $_POST['category'];
     $content = $_POST['content'];
 
     // Handle file upload
@@ -47,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Move uploaded file to designated directory
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
         // Insert new record into database
-        $stmt = $conn->prepare("INSERT INTO admin (title, image, date, content) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $title, $target_file, $date, $content);
+        $stmt = $conn->prepare("INSERT INTO admin (title, image, date, category, content) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $title, $target_file, $date, $category, $content, );
 
         if ($stmt->execute()) {
             echo "<script>window.location.href = 'admin.php';</script>";
@@ -63,23 +64,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Berita</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="favicon.ico">
     <style>
-        .container {
-            margin-top: 100px;
-        }
         img {
             max-width: 200px;
         }
+
+        .back-to-blog {
+            color: #343434;
+            font-size: 18px;
+        }
+
+        a:hover {
+            color: #343434;
+            text-decoration: none;
+        }
+
+        .icon {
+            margin: 20px 0 23px 20px;
+            width: 23px;
+            height: 23px;
+        }
+
+        .icon,
+        .back-to-blog:hover {
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
+    <a href="admin.php" class="back-to-blog"><svg xmlns="http://www.w3.org/2000/svg" class="icon" ;
+            viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
+        </svg>Back</a>
     <div class="container">
-        <h1>Tambah Berita</h1>
+        <h1 class="text">Tambah Berita</h1>
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="title">Judul Berita:</label>
@@ -95,6 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="date" class="form-control" id="date" name="date" required>
             </div>
             <div class="form-group">
+                <label for="category">Kategori:</label>
+                <input type="text" class="form-control" id="category" name="category" required>
+            </div>
+            <div class="form-group">
                 <label for="content">Isi:</label>
                 <textarea class="form-control" id="content" name="content" required></textarea>
             </div>
@@ -105,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script>
         function previewImage(event) {
             var reader = new FileReader();
-            reader.onload = function(){
+            reader.onload = function () {
                 var output = document.getElementById('preview');
                 output.src = reader.result;
                 output.style.display = 'block';
@@ -114,4 +145,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </script>
 </body>
+
 </html>

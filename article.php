@@ -14,6 +14,7 @@ $article = $result->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $article['title']; ?></title>
     <link rel="stylesheet" href="./style/style.css">
+    <link rel="icon" href="favicon.ico">
     <style>
         .main-content {
             margin-top: -30px;
