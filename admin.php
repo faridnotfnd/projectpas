@@ -44,15 +44,32 @@ $result = $conn->query("SELECT image, title, date, content, category, id FROM ad
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            /* Menjadikan posisi relatif untuk referensi absolut */
         }
 
         .search-bar input {
-            padding: 10px;
+            padding: 10px 30px 10px 10px;
+            /* Sesuaikan padding untuk memberi ruang bagi ikon */
             font-size: 16px;
             border: 1px solid #aaa;
             border-radius: 10px;
             width: 250px;
             height: 41px;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+        }
+
+        .search-svg {
+            cursor: pointer;
+            width: 22px;
+            height: 22px;
+            fill: #aaa;
+            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -63,10 +80,16 @@ $result = $conn->query("SELECT image, title, date, content, category, id FROM ad
             <header class="main-header">
                 <h1>Admin Panel</h1>
                 <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchNews()">
                     <span class="search-icon">
-                        <input type="text" placeholder="Search...">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                            class="search-svg"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                        </svg>
                     </span>
                 </div>
+
                 <a href="addnews.php" class="btn btn-primary">Add</a>
                 <a href="#" class="btn btn-secondary" onclick="confirmLogout(event)">Logout</a>
             </header>
@@ -109,6 +132,24 @@ $result = $conn->query("SELECT image, title, date, content, category, id FROM ad
     </div>
 
     <script>
+        function searchNews() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.querySelector(".table-striped");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
         function confirmLogout(event) {
             if (confirm('Are you sure you want to logout?')) {
                 window.location.href = 'logout.php';

@@ -1,8 +1,18 @@
 <?php
 include 'koneksi.php';
 
-$result = $conn->query("SELECT id, image, title, date, content, category FROM admin");
+$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
+if ($searchQuery) {
+    // Gunakan prepared statement untuk mencegah SQL injection
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ?");
+    $searchTerm = '%' . $searchQuery . '%';
+    $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query("SELECT id, image, title, date, content, category FROM admin");
+}
 ?>
 
 <!DOCTYPE html>
@@ -132,6 +142,7 @@ $result = $conn->query("SELECT id, image, title, date, content, category FROM ad
         }
 
         .search-bar svg {
+            cursor: pointer;
             margin-right: 5px;
             width: 22px;
             height: 22px;
@@ -210,7 +221,7 @@ $result = $conn->query("SELECT id, image, title, date, content, category FROM ad
         }
 
         .card {
-            transition: background-color 0.5s ease-in-out;
+            transition: background-color 0.4s ease-in-out;
         }
 
         .card:hover {
@@ -229,7 +240,7 @@ $result = $conn->query("SELECT id, image, title, date, content, category FROM ad
         }
 
         .icon {
-            margin-top: 1.8px;
+            margin-top: 1.5px;
             width: 10px;
             height: 10px;
         }
@@ -324,14 +335,15 @@ $result = $conn->query("SELECT id, image, title, date, content, category FROM ad
             <header class="main-header">
                 <h1>Majalah Dinding SMKN 1 BANJAR</h1>
                 <p>Menampilkan berita terbaru yang ada di sekolah</p>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search">
+                <form action="" method="GET" class="search-bar">
+                    <input type="text" id="searchInput" name="search" placeholder="Search"
+                        value="<?php echo htmlspecialchars($searchQuery); ?>">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                         <path
                             d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
                     </svg>
-                </div>
+                </form>
             </header>
 
             <section class="news-cards">
@@ -345,7 +357,7 @@ $result = $conn->query("SELECT id, image, title, date, content, category FROM ad
                                     <span class="dot"></span> <span class="date"><?php echo $row['date']; ?></span>
                                 </div>
                                 <h2><?php echo $row['title']; ?></h2>
-                                <p><?php echo substr($row['content'], 0, 220); ?>...</p>
+                                <p><?php echo substr($row['content'], 0, 210); ?>...</p>
                                 <a href="#" class="continue-reading">
                                     Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"
                                         viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
@@ -402,6 +414,22 @@ $result = $conn->query("SELECT id, image, title, date, content, category FROM ad
                 modal.style.display = "none";
             }
         }
+
+        // Ambil ikon SVG
+        var searchIcon = document.querySelector('.search-bar svg');
+
+        // Tambahkan event listener untuk menangani klik pada ikon pencarian
+        searchIcon.addEventListener('click', function () {
+            // Lakukan pencarian saat ikon pencarian diklik
+            var form = this.closest('form');
+            var searchInput = form.querySelector('input[name="search"]');
+            var searchValue = searchInput.value.trim(); // Ambil nilai pencarian dan hapus spasi ekstra
+
+            // Lakukan pencarian hanya jika ada nilai yang dimasukkan
+            if (searchValue !== '') {
+                form.submit(); // Kirim formulir pencarian
+            }
+        });
 
         document.querySelectorAll('.continue-reading').forEach(link => {
             link.addEventListener('click', function (event) {

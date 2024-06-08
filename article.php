@@ -16,8 +16,10 @@ $article = $result->fetch_assoc();
     <link rel="stylesheet" href="./style/style.css">
     <link rel="icon" href="favicon.ico">
     <style>
-        .main-content {
-            margin-top: -30px;
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
         }
 
         .article-detail {
@@ -47,7 +49,6 @@ $article = $result->fetch_assoc();
         .article-detail img {
             width: 100%;
             height: auto;
-            margin-bottom: 20px;
         }
 
         .article-content p {
@@ -62,15 +63,20 @@ $article = $result->fetch_assoc();
             font-weight: 600;
         }
 
+        a {
+            text-decoration: none;
+        }
+
         a:hover {
             color: #343434;
             text-decoration: none;
         }
 
         .icon {
-            margin: 20px 0 -4px 20px;
+            margin: 50px 0 -3px 20px;
             width: 20px;
             height: 20px;
+
         }
 
         .icon,
@@ -80,16 +86,13 @@ $article = $result->fetch_assoc();
 
         .main-content {
             font-size: 1.5em;
+            margin-top: -30px;
         }
+
     </style>
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="navbar-content">
-            <h3>Majalah Dinding</h3>
-        </div>
-    </header>
     <div class="container">
         <main class="main-content">
             <a href="index.php" class="back-to-blog"><svg xmlns="http://www.w3.org/2000/svg" class="icon" ;
@@ -99,8 +102,8 @@ $article = $result->fetch_assoc();
                 </svg>Back</a>
             <article class="article-detail">
                 <h1><?php echo $article['title']; ?></h1>
-                <p class="date"><?php echo $article['date']; ?></p>
                 <img src="<?php echo $article['image']; ?>" alt="Gambar Berita" class="article-image">
+                <p class="date"><?php echo $article['date']; ?></p>
                 <div class="article-content">
                     <p><?php echo $article['content']; ?></p>
                 </div>
