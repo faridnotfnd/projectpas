@@ -1,19 +1,33 @@
 <?php
 include 'koneksi.php';
 
+$limit = 12; // Jumlah artikel per halaman
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
+// Hitung total artikel dan total halaman
+$totalQuery = $searchQuery ?
+    "SELECT COUNT(*) AS count FROM admin WHERE title LIKE '%$searchQuery%' OR content LIKE '%$searchQuery%' OR category LIKE '%$searchQuery%'" :
+    "SELECT COUNT(*) AS count FROM admin";
+$totalResult = $conn->query($totalQuery);
+$totalRows = $totalResult->fetch_assoc()['count'];
+$totalPages = ceil($totalRows / $limit);
+
+// Query untuk mendapatkan artikel sesuai halaman dan pencarian
 if ($searchQuery) {
-    // Gunakan prepared statement untuk mencegah SQL injection
-    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ?");
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ? LIMIT ? OFFSET ?");
     $searchTerm = '%' . $searchQuery . '%';
-    $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->bind_param("ssssi", $searchTerm, $searchTerm, $searchTerm, $limit, $offset);
 } else {
-    $result = $conn->query("SELECT id, image, title, date, content, category FROM admin");
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin LIMIT ? OFFSET ?");
+    $stmt->bind_param("ii", $limit, $offset);
 }
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -101,7 +115,7 @@ if ($searchQuery) {
             justify-content: center;
             align-items: center;
             margin-top: 100px;
-            margin-bottom: 100px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -316,6 +330,37 @@ if ($searchQuery) {
         .modal-content button:hover {
             background-color: #0056b3;
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #007BFF;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .pagination a.active {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+        }
+
+        #noResultsMessage {
+            text-align: center;
+            color: #555;
+            padding-left: 590px;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -325,8 +370,7 @@ if ($searchQuery) {
             <h3>Majalah Dinding</h3>
             <nav class="navbar-nav">
                 <a href="#" data-toggle="modal" data-target="#loginModal"><img width="32" height="32"
-                        src="https://img.icons8.com/pastel-glyph/64/gender-neutral-user.png"
-                        alt="gender-neutral-user" /></a>
+                        src="https://img.icons8.com/pastel-glyph/64/gender-neutral-user.png" alt="login-admin" /></a>
             </nav>
         </div>
     </header>
@@ -343,8 +387,9 @@ if ($searchQuery) {
                             d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
                     </svg>
                 </form>
-
-                <section class="news-cards" id="newsCards">
+            </header>
+            <section class="news-cards" id="newsCards">
+                <?php if ($result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <div class="card" data-article-id="<?php echo $row['id']; ?>">
                             <a href="article.php?id=<?php echo $row['id']; ?>">
@@ -360,14 +405,33 @@ if ($searchQuery) {
                                         Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"
                                             viewBox="0 0 320 512">
                                             <path
-                                                d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
+                                                d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5 12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                                         </svg>
                                     </a>
                                 </div>
                             </a>
                         </div>
                     <?php endwhile; ?>
-                </section>
+                <?php else: ?>
+                    <p id="noResultsMessage">Tidak ada hasil yang ditemukan.</p>
+                <?php endif; ?>
+            </section>
+
+
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo $searchQuery; ?>">&laquo; Previous</a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <a href="?page=<?php echo $i; ?>&search=<?php echo $searchQuery; ?>" <?php if ($i == $page)
+                              echo 'class="active"'; ?>><?php echo $i; ?></a>
+                <?php endfor; ?>
+
+                <?php if ($page < $totalPages): ?>
+                    <a href="?page=<?php echo $page + 1; ?>&search=<?php echo $searchQuery; ?>">Next &raquo;</a>
+                <?php endif; ?>
+            </div>
 
         </main>
     </div>
@@ -441,44 +505,29 @@ if ($searchQuery) {
         $(document).ready(function () {
             $('#searchInput').on('keyup', function () {
                 let searchQuery = $(this).val();
-
                 $.ajax({
-                    type: 'POST',
-                    url: 'search.php',
-                    data: { search: searchQuery },
+                    type: 'GET',
+                    url: 'index.php',
+                    data: { search: searchQuery, page: 1 },
                     success: function (response) {
-                        let articles = JSON.parse(response);
                         let newsCards = $('#newsCards');
-                        newsCards.empty();
+                        let parser = new DOMParser();
+                        let doc = parser.parseFromString(response, 'text/html');
+                        let newContent = doc.querySelector('#newsCards').innerHTML;
+                        let noResultsMessage = doc.querySelector('#noResultsMessage');
 
-                        articles.forEach(function (article) {
-                            let card = `
-                        <div class="card" data-article-id="${article.id}">
-                            <a href="article.php?id=${article.id}">
-                                <img src="${article.image}" alt="Gambar Berita">
-                                <div class="card-content">
-                                    <div class="card-header">
-                                        <span class="category">${article.category}</span>
-                                        <span class="dot"></span> <span class="date">${article.date}</span>
-                                    </div>
-                                    <h2>${article.title}</h2>
-                                    <p>${article.content.substring(0, 210)}...</p>
-                                    <a href="#" class="continue-reading">
-                                        Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"
-                                            viewBox="0 0 320 512">
-                                            <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </a>
-                        </div>
-                    `;
-                            newsCards.append(card);
-                        });
+                        if (noResultsMessage) {
+                            newsCards.html('<p id="noResultsMessage">Tidak ada hasil yang ditemukan.</p>');
+                        } else {
+                            newsCards.html(newContent);
+                        }
+
+                        $('.pagination').html(doc.querySelector('.pagination').innerHTML);
                     }
                 });
             });
         });
+
     </script>
 </body>
 
