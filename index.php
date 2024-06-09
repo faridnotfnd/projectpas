@@ -100,8 +100,8 @@ if ($searchQuery) {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-top: 80px;
-            margin-bottom: 130px;
+            margin-top: 100px;
+            margin-bottom: 100px;
             text-align: center;
         }
 
@@ -153,7 +153,7 @@ if ($searchQuery) {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 130px;
         }
 
         .card {
@@ -236,7 +236,7 @@ if ($searchQuery) {
             text-decoration: none;
             display: flex;
             align-items: center;
-            font-weight: 800;
+            font-weight: 600;
         }
 
         .icon {
@@ -256,7 +256,7 @@ if ($searchQuery) {
             overflow: auto;
             background-color: rgb(0, 0, 0);
             background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
+            padding-top: 50px;
         }
 
         .modal-content {
@@ -335,41 +335,40 @@ if ($searchQuery) {
             <header class="main-header">
                 <h1>Majalah Dinding SMKN 1 BANJAR</h1>
                 <p>Menampilkan berita terbaru yang ada di sekolah</p>
-                <form action="" method="GET" class="search-bar">
+                <form action="" method="GET" class="search-bar" id="searchForm">
                     <input type="text" id="searchInput" name="search" placeholder="Search"
                         value="<?php echo htmlspecialchars($searchQuery); ?>">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                         <path
                             d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
                     </svg>
                 </form>
-            </header>
 
-            <section class="news-cards">
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <div class="card" data-article-id="<?php echo $row['id']; ?>">
-                        <a href="article.php?id=<?php echo $row['id']; ?>">
-                            <img src="<?php echo $row['image']; ?>" alt="Gambar Berita">
-                            <div class="card-content">
-                                <div class="card-header">
-                                    <span class="category"><?php echo $row['category']; ?></span>
-                                    <span class="dot"></span> <span class="date"><?php echo $row['date']; ?></span>
+                <section class="news-cards" id="newsCards">
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <div class="card" data-article-id="<?php echo $row['id']; ?>">
+                            <a href="article.php?id=<?php echo $row['id']; ?>">
+                                <img src="<?php echo $row['image']; ?>" alt="Gambar Berita">
+                                <div class="card-content">
+                                    <div class="card-header">
+                                        <span class="category"><?php echo $row['category']; ?></span>
+                                        <span class="dot"></span> <span class="date"><?php echo $row['date']; ?></span>
+                                    </div>
+                                    <h2><?php echo $row['title']; ?></h2>
+                                    <p><?php echo substr($row['content'], 0, 210); ?>...</p>
+                                    <a href="#" class="continue-reading">
+                                        Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                            viewBox="0 0 320 512">
+                                            <path
+                                                d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
+                                        </svg>
+                                    </a>
                                 </div>
-                                <h2><?php echo $row['title']; ?></h2>
-                                <p><?php echo substr($row['content'], 0, 210); ?>...</p>
-                                <a href="#" class="continue-reading">
-                                    Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"
-                                        viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                                        <path
-                                            d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </a>
-                    </div>
-                <?php endwhile; ?>
-            </section>
+                            </a>
+                        </div>
+                    <?php endwhile; ?>
+                </section>
+
         </main>
     </div>
 
@@ -387,7 +386,7 @@ if ($searchQuery) {
             </form>
         </div>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Get the modal
         var modal = document.getElementById("loginModal");
@@ -437,6 +436,47 @@ if ($searchQuery) {
                 const card = this.closest('.card');
                 const articleId = card.dataset.articleId;
                 window.location.href = `article.php?id=${articleId}`; // Pengalihan ke halaman artikel
+            });
+        });
+        $(document).ready(function () {
+            $('#searchInput').on('keyup', function () {
+                let searchQuery = $(this).val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'search.php',
+                    data: { search: searchQuery },
+                    success: function (response) {
+                        let articles = JSON.parse(response);
+                        let newsCards = $('#newsCards');
+                        newsCards.empty();
+
+                        articles.forEach(function (article) {
+                            let card = `
+                        <div class="card" data-article-id="${article.id}">
+                            <a href="article.php?id=${article.id}">
+                                <img src="${article.image}" alt="Gambar Berita">
+                                <div class="card-content">
+                                    <div class="card-header">
+                                        <span class="category">${article.category}</span>
+                                        <span class="dot"></span> <span class="date">${article.date}</span>
+                                    </div>
+                                    <h2>${article.title}</h2>
+                                    <p>${article.content.substring(0, 210)}...</p>
+                                    <a href="#" class="continue-reading">
+                                        Continue Reading <svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                            viewBox="0 0 320 512">
+                                            <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </a>
+                        </div>
+                    `;
+                            newsCards.append(card);
+                        });
+                    }
+                });
             });
         });
     </script>
