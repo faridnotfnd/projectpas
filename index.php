@@ -429,7 +429,6 @@ $result = $stmt->get_result();
             align-items: center;
             border-top: 1px solid #ddd;
             padding-top: 20px;
-            margin-top: 10px;
         }
 
         .footer-bottom p {

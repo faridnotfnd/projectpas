@@ -1,43 +1,37 @@
 <?php
-session_start();
 include 'koneksi.php';
 
-// Tentukan jumlah baris per halaman
-$limit = 10;
+$limit = 12;
 
-// Dapatkan nomor halaman saat ini dari parameter URL, jika tidak ada set default ke 1
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Dapatkan kata kunci pencarian
-$search = isset($_GET['search']) ? $_GET['search'] : '';
+$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+$searchParam = "%" . $searchQuery . "%";
 
-// Query untuk mendapatkan total jumlah baris
-$total_query = "SELECT COUNT(*) AS total FROM admin";
-if ($search) {
-    $total_query .= " WHERE title LIKE '%$search%'";
-}
-$total_result = $conn->query($total_query);
+$total_result = $conn->prepare("SELECT COUNT(*) AS total FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ?");
+$total_result->bind_param("sss", $searchParam, $searchParam, $searchParam);
+$total_result->execute();
+$total_result = $total_result->get_result();
 $total_rows = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 
-// Query untuk mendapatkan data dengan limit dan offset
-$data_query = "SELECT image, title, date, content, category, id FROM admin";
-if ($search) {
-    $data_query .= " WHERE title LIKE '%$search%'";
-}
-$data_query .= " ORDER BY inserted_at ASC LIMIT $limit OFFSET $offset";
-$result = $conn->query($data_query);
+$result = $conn->prepare("SELECT image, title, date, content, category, id FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ? ORDER BY inserted_at ASC LIMIT ? OFFSET ?");
+$result->bind_param("ssssi", $searchParam, $searchParam, $searchParam, $limit, $offset);
+$result->execute();
+$result = $result->get_result();
 
-// Kembalikan data dalam format JSON
 $data = [];
 while ($row = $result->fetch_assoc()) {
     $data[] = $row;
 }
 
-echo json_encode([
+$response = [
     'data' => $data,
-    'total_pages' => $total_pages,
-    'current_page' => $page
-]);
+    'current_page' => $page,
+    'total_pages' => $total_pages
+];
+
+header('Content-Type: application/json');
+echo json_encode($response);
 ?>

@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])) {
 include 'koneksi.php';
 
 // Tentukan jumlah baris per halaman
-$limit = 10;
+$limit = 12;
 
 // Dapatkan nomor halaman saat ini dari parameter URL, jika tidak ada set default ke 1
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
@@ -31,6 +31,7 @@ $result->bind_param("ssssi", $searchParam, $searchParam, $searchParam, $limit, $
 $result->execute();
 $result = $result->get_result();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -180,7 +181,7 @@ $result = $result->get_result();
 
                         const editButton = document.createElement("a");
                         editButton.href = `editnews.php?id=${item.id}`;
-                        editButton.classList.add("btn", "btn-warning", "btn-sm");
+                        editButton.classList.add("btn", "btn-warning", "btn-sm", "mr-2");
                         editButton.textContent = "Edit";
                         actionCell.appendChild(editButton);
 
@@ -198,6 +199,7 @@ $result = $result->get_result();
 
                     const pagination = document.getElementById("pagination");
                     pagination.innerHTML = '';
+
                     if (data.current_page > 1) {
                         const prevPageItem = document.createElement("li");
                         prevPageItem.classList.add("page-item");
