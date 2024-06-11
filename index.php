@@ -6,20 +6,25 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+$categoryQuery = isset($_GET['category']) ? $_GET['category'] : '';
 
-// Hitung total artikel dan total halaman
 $totalQuery = $searchQuery ?
     "SELECT COUNT(*) AS count FROM admin WHERE title LIKE '%$searchQuery%' OR content LIKE '%$searchQuery%' OR category LIKE '%$searchQuery%'" :
-    "SELECT COUNT(*) AS count FROM admin";
+    ($categoryQuery ?
+        "SELECT COUNT(*) AS count FROM admin WHERE category = '$categoryQuery'" :
+        "SELECT COUNT(*) AS count FROM admin");
+
 $totalResult = $conn->query($totalQuery);
 $totalRows = $totalResult->fetch_assoc()['count'];
 $totalPages = ceil($totalRows / $limit);
 
-// Query untuk mendapatkan artikel sesuai halaman dan pencarian
 if ($searchQuery) {
-    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ? LIMIT ? OFFSET ?");
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE (title LIKE ? OR content LIKE ? OR category LIKE ?) LIMIT ? OFFSET ?");
     $searchTerm = '%' . $searchQuery . '%';
     $stmt->bind_param("ssssi", $searchTerm, $searchTerm, $searchTerm, $limit, $offset);
+} elseif ($categoryQuery) {
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE category = ? LIMIT ? OFFSET ?");
+    $stmt->bind_param("sii", $categoryQuery, $limit, $offset);
 } else {
     $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin LIMIT ? OFFSET ?");
     $stmt->bind_param("ii", $limit, $offset);
@@ -334,7 +339,7 @@ $result = $stmt->get_result();
         .pagination {
             display: flex;
             justify-content: center;
-            margin-top: 40px;
+            margin-top: 60px;
         }
 
         .pagination a {
@@ -361,6 +366,90 @@ $result = $stmt->get_result();
             padding-left: 590px;
             white-space: nowrap;
         }
+
+        /* Add this to your existing CSS file */
+        footer {
+            margin-top: 40px;
+            background-color: #f8f8f8;
+            padding: 40px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .footer-container {
+            max-width: 1450px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-column {
+            flex: 1;
+            margin: 10px;
+        }
+
+        #about {
+            padding-right: 200px;
+        }
+
+        .footer-column h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column ul li a:hover {
+            color: #333;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            margin-top: 10px;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+        }
+
+        .footer-icons a {
+            margin-left: 10px;
+        }
+
+        .footer-icons img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .rigth {
+            width: 10px;
+            height: 10px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 
@@ -378,7 +467,7 @@ $result = $stmt->get_result();
         <main class="main-content">
             <header class="main-header">
                 <h1>Majalah Dinding SMKN 1 BANJAR</h1>
-                <p>Menampilkan berita terbaru yang ada di sekolah</p>
+                <p>Menampilkan berita terbaru, informasi kegiatan, dan berbagai artikel menarik dari SMKN 1 Banjar.</p>
                 <form action="" method="GET" class="search-bar" id="searchForm">
                     <input type="text" id="searchInput" name="search" placeholder="Search"
                         value="<?php echo htmlspecialchars($searchQuery); ?>">
@@ -450,6 +539,51 @@ $result = $stmt->get_result();
             </form>
         </div>
     </div>
+    <!-- Add this at the bottom of your existing HTML file -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-column" id="about">
+                    <h4>About</h4>
+                    <p>Majalah Dinding SMKN 1 BANJAR adalah platform digital yang menampilkan berita terbaru, kegiatan,
+                        dan artikel menarik dari lingkungan sekolah. Kami berkomitmen memberikan informasi yang aktual
+                        dan relevan bagi seluruh warga sekolah. Dikelola oleh tim redaksi berdedikasi, kami menyajikan
+                        berbagai topik mulai dari kegiatan sekolah hingga tips edukatif. Selamat membaca dan tetap
+                        update dengan berita terkini dari sekolah kita!</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Category</h4>
+                    <ul>
+                        <li><a href="index.php?category=Hal">Hal</a></li>
+                        <li><a href="index.php?category=Acara">Acara</a></li>
+                        <li><a href="index.php?category=Halaman Penting">Halaman Penting</a></li>
+                        <!-- Tambahkan kategori lain di sini -->
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Important Links</h4>
+                    <ul>
+                        <li><a href="https://smkn1banjar.sch.id/">SMKN 1 BANJAR<svg xmlns="http://www.w3.org/2000/svg"
+                                    style="margin-bottom: 1.9px;" class="rigth"
+                                    viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                    <path
+                                        d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
+                                </svg></a> </li>
+                        <li><a href="https://www.instagram.com/mk_smknegeri1banjar/">MK SMKN 1 BANJAR<svg
+                                    xmlns="http://www.w3.org/2000/svg" class="rigth"
+                                    viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                    <path
+                                        d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
+                                </svg></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Majalah Dinding, All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Get the modal
