@@ -40,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Allow certain file formats
-    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-        echo "<script>alert('Maaf, hanya file JPG, JPEG, PNG & GIF yang diperbolehkan.'); window.location.href = 'addnews.php';</script>";
+    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" && $imageFileType != "webp") {
+        echo "<script>alert('Maaf, hanya file JPG, JPEG, PNG, GIF & WEBP yang diperbolehkan.'); window.location.href = 'addnews.php';</script>";
         exit();
     }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
         // Insert new record into database
         $stmt = $conn->prepare("INSERT INTO admin (title, image, date, category, content) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $title, $target_file, $date, $category, $content, );
+        $stmt->bind_param("sssss", $title, $target_file, $date, $category, $content);
 
         if ($stmt->execute()) {
             echo "<script>window.location.href = 'admin.php';</script>";

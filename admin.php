@@ -17,21 +17,38 @@ $offset = ($page - 1) * $limit;
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 $searchParam = "%" . $searchQuery . "%";
 
+// Dapatkan nilai tanggal
+$dateQuery = isset($_GET['date']) ? $_GET['date'] : '';
+$dateCondition = !empty($dateQuery) ? "AND date = ?" : "";
+
 // Query untuk mendapatkan total jumlah baris dengan kondisi pencarian
-$total_result = $conn->prepare("SELECT COUNT(*) AS total FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ?");
-$total_result->bind_param("sss", $searchParam, $searchParam, $searchParam);
+$total_sql = "SELECT COUNT(*) AS total FROM admin WHERE (title LIKE ? OR content LIKE ? OR category LIKE ?) $dateCondition";
+$total_result = $conn->prepare($total_sql);
+
+if (!empty($dateQuery)) {
+    $total_result->bind_param("ssss", $searchParam, $searchParam, $searchParam, $dateQuery);
+} else {
+    $total_result->bind_param("sss", $searchParam, $searchParam, $searchParam);
+}
+
 $total_result->execute();
 $total_result = $total_result->get_result();
 $total_rows = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 
 // Query untuk mendapatkan data dengan limit dan offset dengan kondisi pencarian
-$result = $conn->prepare("SELECT image, title, date, content, category, id FROM admin WHERE title LIKE ? OR content LIKE ? OR category LIKE ? ORDER BY inserted_at ASC LIMIT ? OFFSET ?");
-$result->bind_param("ssssi", $searchParam, $searchParam, $searchParam, $limit, $offset);
+$data_sql = "SELECT image, title, date, content, category, id FROM admin WHERE (title LIKE ? OR content LIKE ? OR category LIKE ?) $dateCondition ORDER BY date DESC LIMIT ? OFFSET ?";
+$result = $conn->prepare($data_sql);
+
+if (!empty($dateQuery)) {
+    $result->bind_param("sssssi", $searchParam, $searchParam, $searchParam, $dateQuery, $limit, $offset);
+} else {
+    $result->bind_param("sssii", $searchParam, $searchParam, $searchParam, $limit, $offset);
+}
+
 $result->execute();
 $result = $result->get_result();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +62,17 @@ $result = $result->get_result();
     <link rel="icon" href="favicon.ico">
     <style>
         .container {
-            margin-right: 200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            width: 100%;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
         }
 
         .description {
@@ -90,6 +117,43 @@ $result = $result->get_result();
             fill: #aaa;
             margin-bottom: 2px;
         }
+
+        @media screen and (max-width: 767px) {
+            .container {
+                padding: 0 10px;
+                width: 100%;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .table {
+                width: 100%;
+            }
+
+            .action-column {
+                width: auto;
+            }
+
+            .search-bar {
+                width: 100%;
+                padding: 0 10px;
+            }
+
+            .search-bar input {
+                width: 100%;
+            }
+
+            .search-icon svg {
+                margin-right: 10px;
+            }
+
+            .btn {
+                margin-bottom: 5px;
+                margin-left: 5px;
+            }
+        }
     </style>
 </head>
 
@@ -112,19 +176,21 @@ $result = $result->get_result();
             </header>
 
             <section class="news-cards">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Judul</th>
-                            <th>Gambar</th>
-                            <th>Tanggal</th>
-                            <th>Kategori</th>
-                            <th>Deskripsi</th>
-                            <th class="action-column">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="newsTable"></tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Gambar</th>
+                                <th>Tanggal</th>
+                                <th>Kategori</th>
+                                <th>Deskripsi</th>
+                                <th class="action-column">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newsTable"></tbody>
+                    </table>
+                </div>
 
                 <!-- Pagination -->
                 <nav aria-label="Page navigation">

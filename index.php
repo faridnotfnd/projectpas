@@ -18,17 +18,19 @@ $totalResult = $conn->query($totalQuery);
 $totalRows = $totalResult->fetch_assoc()['count'];
 $totalPages = ceil($totalRows / $limit);
 
+// Mempersiapkan dan menjalankan query
 if ($searchQuery) {
-    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE (title LIKE ? OR content LIKE ? OR category LIKE ?) LIMIT ? OFFSET ?");
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE (title LIKE ? OR content LIKE ? OR category LIKE ?) ORDER BY date DESC LIMIT ? OFFSET ?");
     $searchTerm = '%' . $searchQuery . '%';
     $stmt->bind_param("ssssi", $searchTerm, $searchTerm, $searchTerm, $limit, $offset);
 } elseif ($categoryQuery) {
-    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE category = ? LIMIT ? OFFSET ?");
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin WHERE category = ? ORDER BY date DESC LIMIT ? OFFSET ?");
     $stmt->bind_param("sii", $categoryQuery, $limit, $offset);
 } else {
-    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin LIMIT ? OFFSET ?");
+    $stmt = $conn->prepare("SELECT id, image, title, date, content, category FROM admin ORDER BY date DESC LIMIT ? OFFSET ?");
     $stmt->bind_param("ii", $limit, $offset);
 }
+
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -346,24 +348,26 @@ $result = $stmt->get_result();
             margin: 0 5px;
             padding: 8px 16px;
             text-decoration: none;
-            color: #007BFF;
+            color: #ccc;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
 
         .pagination a.active {
-            background-color: #007BFF;
+            background-color: #7393B3;
             color: white;
         }
 
         .pagination a:hover {
-            background-color: #ddd;
+            background-color: #7393B3;
         }
 
         #noResultsMessage {
             text-align: center;
             color: #555;
-            padding-left: 590px;
+            position: absolute;
+            left: 42.5%;
+            bottom: 30%;
             white-space: nowrap;
         }
 
@@ -379,7 +383,7 @@ $result = $stmt->get_result();
         .footer-container {
             max-width: 1450px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 10px;
         }
 
         .footer-row {
@@ -447,7 +451,76 @@ $result = $stmt->get_result();
         .rigth {
             width: 10px;
             height: 10px;
+            margin-bottom: 0px;
             margin-left: 5px;
+        }
+
+        /* Mobile Specific Styles */
+        @media screen and (max-width: 767px) {
+            .news-cards {
+                grid-template-columns: 1fr;
+                /* Membuat satu kolom yang mengambil seluruh lebar kontainer */
+                padding: 0 15px;
+            }
+
+            .card {
+                margin: 0 auto;
+                max-width: 100%;
+                /* Mengambil seluruh lebar kontainer pada tampilan mobile */
+            }
+
+            .card img {
+                height: auto;
+                /* Menjaga rasio aspek gambar */
+            }
+
+            .card-content {
+                padding: 15px;
+            }
+
+            .card h2 {
+                font-size: 18px;
+            }
+
+            .card p {
+                font-size: 14px;
+            }
+
+            .continue-reading {
+                font-size: 12px;
+            }
+
+            .icon {
+                width: 8px;
+                height: 8px;
+            }
+
+            #about {
+                padding-right: 10px;
+            }
+
+            #noResultsMessage {
+                position: absolute;
+                top: 75%;
+                transform: translate(-42%, -42%);
+                text-align: center;
+                z-index: 9999;
+                /* pastikan lebih tinggi dari elemen lain */
+                width: 100%;
+                /* agar pesan memenuhi lebar layar */
+            }
+
+            .search-bar {
+                width: 300px;
+            }
+
+            .navbar-nav {
+                margin-right: 30px;
+            }
+
+            .navbar-content h3 {
+                margin-left: 30px;
+            }
         }
     </style>
 </head>
@@ -552,9 +625,9 @@ $result = $stmt->get_result();
                 <div class="footer-column">
                     <h4>Category</h4>
                     <ul>
-                        <li><a href="index.php?category=Hal">Hal</a></li>
-                        <li><a href="index.php?category=Acara">Acara</a></li>
-                        <li><a href="index.php?category=Halaman Penting">Halaman Penting</a></li>
+                        <li><a href="index.php?category=Pendidikan">Pendidikan</a></li>
+                        <li><a href="index.php?category=Kegiatan Sekolah">Kegiatan Sekolah</a></li>
+                        <li><a href="index.php?category=Informasi Akademik">Informasi Akademik</a></li>
                         <!-- Tambahkan kategori lain di sini -->
                     </ul>
                 </div>
@@ -562,7 +635,7 @@ $result = $stmt->get_result();
                     <h4>Important Links</h4>
                     <ul>
                         <li><a href="https://smkn1banjar.sch.id/">SMKN 1 BANJAR<svg xmlns="http://www.w3.org/2000/svg"
-                                    style="margin-bottom: 1.9px;" class="rigth"
+                                    style="margin-bottom: 2px;" class=" rigth"
                                     viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                                     <path
                                         d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
@@ -573,6 +646,24 @@ $result = $stmt->get_result();
                                     <path
                                         d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
                                 </svg></a></li>
+                    </ul>
+                    </svg></a> </li>
+                    <ul>
+                        <li><a href="https://www.kemdikbud.go.id/">Kemendikbud<svg xmlns="http://www.w3.org/2000/svg"
+                                    style="margin-bottom: 2px;" class="rigth"
+                                    viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                    <path
+                                        d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
+                                </svg></a></li>
+                    </ul>
+                    </svg></a> </li>
+                    <ul>
+                        <li><a href="https://disdik.jabarprov.go.id/">Disdik Jabar</a><svg
+                                xmlns="http://www.w3.org/2000/svg" class="rigth"
+                                viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
+                            </svg></a></li>
                     </ul>
                 </div>
             </div>
