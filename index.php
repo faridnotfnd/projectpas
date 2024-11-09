@@ -362,15 +362,6 @@ $result = $stmt->get_result();
             background-color: #7393B3;
         }
 
-        #noResultsMessage {
-            text-align: center;
-            color: #555;
-            position: absolute;
-            left: 42.5%;
-            bottom: 30%;
-            white-space: nowrap;
-        }
-
         /* Add this to your existing CSS file */
         footer {
             margin-top: 40px;
@@ -499,17 +490,6 @@ $result = $stmt->get_result();
                 padding-right: 10px;
             }
 
-            #noResultsMessage {
-                position: absolute;
-                top: 75%;
-                transform: translate(-42%, -42%);
-                text-align: center;
-                z-index: 9999;
-                /* pastikan lebih tinggi dari elemen lain */
-                width: 100%;
-                /* agar pesan memenuhi lebar layar */
-            }
-
             .search-bar {
                 width: 300px;
             }
@@ -573,8 +553,6 @@ $result = $stmt->get_result();
                             </a>
                         </div>
                     <?php endwhile; ?>
-                <?php else: ?>
-                    <p id="noResultsMessage">Tidak ada hasil yang ditemukan.</p>
                 <?php endif; ?>
             </section>
 
@@ -725,32 +703,6 @@ $result = $stmt->get_result();
                 window.location.href = `article.php?id=${articleId}`; // Pengalihan ke halaman artikel
             });
         });
-        $(document).ready(function () {
-            $('#searchInput').on('keyup', function () {
-                let searchQuery = $(this).val();
-                $.ajax({
-                    type: 'GET',
-                    url: 'index.php',
-                    data: { search: searchQuery, page: 1 },
-                    success: function (response) {
-                        let newsCards = $('#newsCards');
-                        let parser = new DOMParser();
-                        let doc = parser.parseFromString(response, 'text/html');
-                        let newContent = doc.querySelector('#newsCards').innerHTML;
-                        let noResultsMessage = doc.querySelector('#noResultsMessage');
-
-                        if (noResultsMessage) {
-                            newsCards.html('<p id="noResultsMessage">Tidak ada hasil yang ditemukan.</p>');
-                        } else {
-                            newsCards.html(newContent);
-                        }
-
-                        $('.pagination').html(doc.querySelector('.pagination').innerHTML);
-                    }
-                });
-            });
-        });
-
     </script>
 </body>
 
